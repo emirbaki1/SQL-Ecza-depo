@@ -1,0 +1,410 @@
+
+USE master;
+GO
+
+-- Yeni bir veritabanı oluştur
+CREATE DATABASE ECZ_Ception;
+GO
+
+-- Oluşturulan veritabanını kullan
+USE ECZ_Ception;
+GO
+
+-- DB_Personel Tablosu
+CREATE TABLE DB_Personel (
+    R_Id INT PRIMARY KEY,
+    Ad VARCHAR(500),
+    Soyad VARCHAR(500),
+    DogumYili DATE,
+    TC BIGINT,
+    Telefon BIGINT,
+    EMail VARCHAR(250),
+    Adres VARCHAR(500),
+    Gorev VARCHAR(50),
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+-- DB_Cari Tablosu
+CREATE TABLE DB_Cari (
+    R_Id INT PRIMARY KEY,
+    Ad VARCHAR(500),
+    Soyad VARCHAR(500),
+    DogumTarihi DATE,
+    TC BIGINT,
+    VergiNo BIGINT,
+    CariTipi INT,
+    Telefon BIGINT,
+    EMail VARCHAR(250),
+    Adres VARCHAR(500),
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+-- DB_Ilac Tablosu
+CREATE TABLE DB_Ilac (
+    R_Id INT PRIMARY KEY,
+    IlacAdi VARCHAR(250),
+	Barkod BIGINT,
+	Aciklama VARCHAR(500),
+    Uretici VARCHAR(250),
+	SatisFiyat FLOAT,
+	SatisKDV FLOAT,
+	AlisFiyat FLOAT,
+	AlisKDV FLOAT,
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+	-- DB_OdemeYontemi Tablosu
+	CREATE TABLE DB_OdemeYontemi (
+		R_Id INT PRIMARY KEY,
+		OdemeYontemiAdi VARCHAR(50),
+		EklemeTarihi DATE,
+		EklemeSaati TIME,
+		Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+		GuncellemeTarihi DATE,
+		GuncellemeSaati TIME,
+		Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+	);
+	GO
+
+
+
+-- DB_Fatura Tablosu
+CREATE TABLE DB_Fatura (
+    R_Id INT PRIMARY KEY,
+    FaturaTipi INT,
+    CariId INT FOREIGN KEY REFERENCES DB_Cari(R_Id),
+    GenelToplam FLOAT,
+    OdemeId INT FOREIGN KEY REFERENCES DB_OdemeYontemi(R_Id),
+    PersonelId INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    Tarih DATE,
+    Saat TIME,
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+-- DB_Recete Tablosu
+CREATE TABLE DB_Recete (
+    R_Id INT PRIMARY KEY,
+    ReceteTipi VARCHAR(50),
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+-- DB_Kategori Tablosu
+CREATE TABLE DB_Kategori (
+    R_Id INT PRIMARY KEY,
+    KategoriAdi VARCHAR(50),
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+-- DB_FaturaDetay Tablosu
+CREATE TABLE DB_FaturaDetay (
+    R_Id INT PRIMARY KEY,
+    FaturaId INT FOREIGN KEY REFERENCES DB_Fatura(R_Id),
+    IlacId INT FOREIGN KEY REFERENCES DB_Ilac(R_Id),
+    Miktar float,
+    BirimFiyat float,
+    SatirToplam float,
+    BirimKDV float,
+    ReceteId INT FOREIGN KEY REFERENCES DB_Recete(R_Id),
+    KategoriId INT FOREIGN KEY REFERENCES DB_Kategori(R_Id),
+    EklemeTarihi DATE,
+    EklemeSaati TIME,
+    Ekleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id),
+    GuncellemeTarihi DATE,
+    GuncellemeSaati TIME,
+    Guncelleyen INT FOREIGN KEY REFERENCES DB_Personel(R_Id)
+);
+GO
+
+
+
+-- DB_Personel tablosuna veri ekleme
+INSERT INTO DB_Personel (R_Id, Ad, Soyad, DogumYili, TC, Telefon, EMail, Adres, Gorev, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 'Akın', 'Tuttul', '2004-09-26', 12345678901, 5551234567, 'akin.turtul@ogr.gelisim.edu.tr', 'İstanbul/Bakırköy', 'Eczane Sahibi', '2023-01-01', '12:30:00', 1, '2023-01-01', '12:30:00', 1),
+(2, 'Serhat', 'Arslan', '2002-05-05', 98765432109, 5559876543, 'serhat.arslan1@ogr.gelisim.edu.tr', 'İstanbul/Beylikdüzü', 'Eczacı', '2023-01-02', '14:45:00', 1, '2023-01-02', '14:45:00', 1),
+(3, 'Oğuz Kaan', 'Kaya', '2003-01-27', 98736552109, 5459463423, 'oguz.kaya@ogr.gelisim.edu.tr', 'İstanbul/Avcılar', 'Kalfa', '2023-01-02', '14:45:00', 1, '2023-01-02', '14:45:00', 1),
+(4, 'Muhammer Emir', 'Baki', '2003-12-20', 12354433112, 5349675624, 'muhammed.baki@ogr.gelisim.edu.tr', 'İstanbul/Başakşehir', 'Eczacı', '2023-01-02', '14:45:00', 1, '2023-01-02', '14:45:00', 1),
+(5, 'Tamer', 'İbil', '2004-02-20', 32364533109, 5559876543, 'tamer.ibil@ogr.gelisim.edu.tr', 'İstanbul/Beylkikdüzü', 'Kasiyer', '2023-01-02', '14:45:00', 1, '2023-01-02', '14:45:00', 1),
+(6, 'Emir', 'Altuntaş', '2003-01-27', 12465442214, 5559876543, 'emir.altuntas1@ogr.gelisim.edu.tr', 'İstanbul/Bağcılar', 'Eczacı', '2023-01-02', '14:45:00', 1, '2023-01-02', '14:45:00', 1);
+
+
+
+
+-- DB_Cari tablosuna veri ekleme
+INSERT INTO DB_Cari (R_Id, Ad, Soyad, DogumTarihi, TC, VergiNo, CariTipi, Telefon, EMail, Adres, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 'Mehmet', 'Öztürk', '1980-03-15', 66288521446, NULL, 1, 5551112233, 'mehmet@email.com', 'İzmir', '2023-01-03', '10:15:00', 1, '2023-01-03', '10:15:00', 1),
+(2, 'Fatma', 'Demir', '1992-07-20', 28124143342, NULL, 1, 5554445566, 'fatma@email.com', 'Bursa', '2023-01-04', '09:30:00', 2, '2023-01-04', '09:30:00', 2),
+(3, 'Ali', 'Kara', '1987-05-12', 39376428934, NULL, 1, 5551234567, 'ali@email.com', 'Ankara', '2023-01-05', '14:00:00', 3, '2023-01-05', '14:00:00', 3),
+(4, 'Zeynep', 'Şahin', '1990-09-30', 26486048176, NULL, 1, 5559876543, 'zeynep@email.com', 'İstanbul', '2023-01-06', '11:30:00', 4, '2023-01-06', '11:30:00', 4),
+(5, 'Mustafa', 'Kurt', '1983-11-15', 17869023736, NULL, 1, 5551112233, 'mustafa@email.com', 'İzmir', '2023-01-07', '13:45:00', 5, '2023-01-07', '13:45:00', 5),
+(6, 'Ayşe', 'Aydın', '1995-04-22', 61796498112, 2159310967, 2, 5554445566, 'ayse@email.com', 'Bursa', '2023-01-08', '09:15:00', 6, '2023-01-08', '09:15:00', 6),
+(7, 'Can', 'Güneş', '1989-08-01', 47383301942, 7554404943, 2, 5555555555, 'can@email.com', 'Ankara', '2023-01-09', '14:30:00', 1, '2023-01-09', '14:30:00', 1),
+(8, 'Deniz', 'Bilgin', '1992-02-28', 14161201466, NULL, 1, 5551234567, 'deniz@email.com', 'İstanbul', '2023-01-10', '10:00:00', 2, '2023-01-10', '10:00:00', 2),
+(9, 'Burak', 'Akgün', '1986-06-25', 93392830928, NULL, 1, 5559876543, 'burak@email.com', 'İzmir', '2023-01-11', '12:20:00', 3, '2023-01-11', '12:20:00', 3),
+(10, 'Ece', 'Erdem', '1991-09-15', 81753972776, NULL, 1, 5554445566, 'ece@email.com', 'Bursa', '2023-01-12', '16:00:00', 4, '2023-01-12', '16:00:00', 4),
+(11, 'Hakan', 'Taş', '1987-11-05', 27396292628, NULL, 1, 5555555555, 'hakan@email.com', 'Ankara', '2023-01-13', '08:45:00', 5, '2023-01-13', '08:45:00', 5),
+(12, 'Melis', 'Şen', '1990-08-20', 84882913238, NULL, 1, 5551234567, 'melis@email.com', 'İstanbul', '2023-01-14', '11:30:00', 6, '2023-01-14', '11:30:00', 6),
+(13, 'Umut', 'Bilgin', '1984-04-10', 5553333444, NULL, 1, 5559876543, 'umut@email.com', 'İzmir', '2023-01-15', '14:45:00', 1, '2023-01-15', '14:45:00', 1),
+(14, 'Selin', 'Erdem', '1996-01-30', 25275159376, 8193562374, 2, 5554445566, 'selin@email.com', 'Bursa', '2023-01-16', '16:30:00', 2, '2023-01-16', '16:30:00', 2),
+(15, 'Emre', 'Aydın', '1989-03-25', 45815173464, NULL, 1, 5555555555, 'emre@email.com', 'Ankara', '2023-01-17', '10:15:00', 3, '2023-01-17', '10:15:00', 3),
+(16, 'Gizem', 'Yılmaz', '1993-06-18', 45815173464, NULL, 1, 5551112233, 'gizem@email.com', 'İstanbul', '2023-02-01', '09:45:00', 4, '2023-02-01', '09:45:00', 4),
+(17, 'Kaan', 'Kaya', '1985-12-10', 10761719844, NULL, 1, 5554445566, 'kaan@email.com', 'İzmir', '2023-02-02', '14:00:00', 5, '2023-02-02', '14:00:00', 5),
+(18, 'Ebru', 'Toprak', '1994-04-05', 35681208452, NULL, 1, 5551234567, 'ebru@email.com', 'Ankara', '2023-02-03', '11:30:00', 1, '2023-02-03', '11:30:00', 1),
+(19, 'Tolga', 'Şahin', '1988-09-22', 80912746906, 9160658101, 2, 5555555555, 'tolga@email.com', 'Bursa', '2023-02-04', '13:45:00', 2, '2023-02-04', '13:45:00', 2),
+(20, 'Zara', 'Gürbüz', '1990-03-15', 80394937328, NULL, 1, 5559876543, 'zara@email.com', 'İstanbul', '2023-02-05', '10:30:00', 3, '2023-02-05', '10:30:00', 3),
+(21, 'Ozan', 'Yıldız', '1986-07-28', 86984472682, NULL, 1, 5551112233, 'ozan@email.com', 'İzmir', '2023-02-06', '12:15:00', 4, '2023-02-06', '12:15:00', 4),
+(22, 'Aylin', 'Kurtuluş', '1991-11-03', 95066130662, NULL, 1, 5554445566, 'aylin@email.com', 'Ankara', '2023-02-07', '15:00:00', 5, '2023-02-07', '15:00:00', 5),
+(23, 'Cem', 'Koç', '1987-05-20', 73491609830, NULL, 1, 5555555555, 'cem@email.com', 'Bursa', '2023-02-08', '09:00:00', 6, '2023-02-08', '09:00:00', 6),
+(24, 'Ece', 'Yılmaz', '1994-02-28', 64507794664, NULL, 1, 5551234567, 'ece@email.com', 'İstanbul', '2023-02-09', '14:30:00', 1, '2023-02-09', '14:30:00', 1),
+(25, 'Arda', 'Demir', '1983-08-15', 95309944834, 0986151322, 2, 5559876543, 'arda@email.com', 'İzmir', '2023-02-10', '11:00:00', 2, '2023-02-10', '11:00:00', 2),
+(26, 'Serdar', 'Yılmaz', '1992-04-12', 46774551010, NULL, 1, 5551112233, 'serdar@email.com', 'İstanbul', '2023-02-11', '09:45:00', 4, '2023-02-11', '09:45:00', 4),
+(27, 'Elif', 'Kaya', '1995-09-18', 71425647040, NULL, 1, 5554445566, 'elif@email.com', 'İzmir', '2023-02-12', '14:00:00', 5, '2023-02-12', '14:00:00', 5),
+(28, 'Murat', 'Toprak', '1986-02-05', 41869967998, NULL, 1, 5551234567, 'murat@email.com', 'Ankara', '2023-02-13', '11:30:00', 1, '2023-02-13', '11:30:00', 1),
+(29, 'Gizem', 'Şahin', '1990-07-22', 31309378958, 3231906182, 2, 5555555555, 'gizem@email.com', 'Bursa', '2023-02-14', '13:45:00', 2, '2023-02-14', '13:45:00', 2),
+(30, 'Kerem', 'Gürbüz', '1988-01-15', 92354967498, NULL, 1, 5559876543, 'kerem@email.com', 'İstanbul', '2023-02-15', '10:30:00', 3, '2023-02-15', '10:30:00', 3),
+(31, 'Selin', 'Yıldız', '1993-05-28', 87146280916, NULL, 1, 5551112233, 'selin@email.com', 'İzmir', '2023-02-16', '12:15:00', 4, '2023-02-16', '12:15:00', 4),
+(32, 'Umut', 'Kurtuluş', '1997-10-03', 59779095786, NULL, 1, 5554445566, 'umut@email.com', 'Ankara', '2023-02-17', '15:00:00', 5, '2023-02-17', '15:00:00', 5),
+(33, 'Aylin', 'Koç', '1985-03-20', 41729087828, NULL, 1, 5555555555, 'aylin@email.com', 'Bursa', '2023-02-18', '09:00:00', 6, '2023-02-18', '09:00:00', 6),
+(34, 'Okan', 'Yılmaz', '1991-08-28', 13975087112, NULL, 1, 5551234567, 'okan@email.com', 'İstanbul', '2023-02-19', '14:30:00', 1, '2023-02-19', '14:30:00', 1),
+(35, 'Seda', 'Demir', '1984-02-15', 92454646538, 5648706163, 2, 5559876543, 'seda@email.com', 'İzmir', '2023-02-20', '11:00:00', 2, '2023-02-20', '11:00:00', 2),
+(36, 'Hüseyin', 'Koç', '1993-04-12', 18577249340, NULL, 1, 5551112233, 'huseyin@email.com', 'İstanbul', '2023-02-21', '09:45:00', 4, '2023-02-21', '09:45:00', 4),
+(37, 'Zeynep', 'Şahin', '1996-09-18', 34068247374, NULL, 1, 5554445566, 'zeynep@email.com', 'İzmir', '2023-02-22', '14:00:00', 5, '2023-02-22', '14:00:00', 5),
+(38, 'Ali', 'Toprak', '1987-02-05', 75783728052, NULL, 1, 5551234567, 'ali@email.com', 'Ankara', '2023-02-23', '11:30:00', 1, '2023-02-23', '11:30:00', 1),
+(39, 'Gül', 'Şahin', '1990-07-22', 62070059920, 7027430524, 2, 5555555555, 'gul@email.com', 'Bursa', '2023-02-24', '13:45:00', 2, '2023-02-24', '13:45:00', 2),
+(40, 'Mehmet', 'Gürbüz', '1988-01-15', 75865985328, NULL, 1, 5559876543, 'mehmet@email.com', 'İstanbul', '2023-02-25', '10:30:00', 3, '2023-02-25', '10:30:00', 3),
+(41, 'Dilara', 'Yıldız', '1993-05-28', 17871974644, NULL, 1, 5551112233, 'dilara@email.com', 'İzmir', '2023-02-26', '12:15:00', 4, '2023-02-26', '12:15:00', 4),
+(42, 'Oğuz', 'Kurtuluş', '1997-10-03', 91694119864, NULL, 1, 5554445566, 'oguz@email.com', 'Ankara', '2023-02-27', '15:00:00', 5, '2023-02-27', '15:00:00', 5),
+(43, 'Elif', 'Koç', '1985-03-20', 77690498516, NULL, 1, 5555555555, 'elif@email.com', 'Bursa', '2023-02-28', '09:00:00', 6, '2023-02-28', '09:00:00', 6),
+(44, 'Umut', 'Yılmaz', '1991-08-28', 96802230370, NULL, 1, 5551234567, 'umut@email.com', 'İstanbul', '2023-03-01', '14:30:00', 1, '2023-03-01', '14:30:00', 1),
+(45, 'Ayşe', 'Demir', '1984-02-15', 66639446138, 0475640882, 2, 5559876543, 'ayse@email.com', 'İzmir', '2023-03-02', '11:00:00', 2, '2023-03-02', '11:00:00', 2);
+
+
+
+
+-- DB_Ilac tablosuna veri ekleme
+INSERT INTO DB_Ilac (R_Id, IlacAdi, Barkod, Aciklama, Uretici, SatisFiyat, SatisKDV, AlisFiyat, AlisKDV, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 'PAROL 500 mg 30 tablet', 8699717010093, 'Ağrı kesici', 'Abdi İbrahim', 41.22, 0.18, 30.00, 0.08, '2023-02-01', '08:45:00', 1, '2023-02-01', '08:45:00', 1),
+(2, 'PAROL 500 mg 20 tablet', 8699717010109, 'Ağrı kesici', 'Abdi İbrahim', 37.24, 0.18, 25.00, 0.08, '2023-02-01', '08:45:00', 1, '2023-02-01', '08:45:00', 1),
+(3, 'ARVELES 25 mg 20 tablet', 8699832090055, 'Antidepresan', 'Abdi İbrahim', 25.75, 0.18, NULL, NULL, '2023-02-02', '11:20:00', 2, '2023-02-02', '11:20:00', 2),
+(4, 'APRANAX FORTE 550 mg 20 tablet', 8699514010258, 'Ağrı kesici', 'Bayer', 103.99, 0.18, NULL, NULL, '2023-02-03', '14:30:00', 3, '2023-02-03', '14:30:00', 3),
+(5, 'APRANAX PLUS 20 film tablet', 8699514090977, 'Antibiyotik', 'Bayer', 103.90, 0.18, NULL, NULL, '2023-02-05', '12:45:00', 5, '2023-02-05', '12:45:00', 5),
+(6, 'AVELOX 400 mg 7 film tablet', 8699546090372, 'Antibiyotik', 'Bayer', 165.47, 0.18, 120.00, 0.08, '2023-02-06', '09:00:00', 6, '2023-02-06', '09:00:00', 6),
+(7, 'ANDAZOL 200 mg 6 film tablet', 8699578090043, 'Antidepresan', 'Eli Lilly', 71.47, 0.18, 50.00, 0.08, '2023-02-07', '11:30:00', 1, '2023-02-07', '11:30:00', 1),
+(8, 'AVIL 2 ml 45.5 mg 5 ampül', 8699516750343, 'Antihistaminik', 'Sanofi', 41.01, 0.18, 30.00, 0.08, '2023-02-08', '15:00:00', 2, '2023-02-08', '15:00:00', 2),
+(9, 'AVAMYS 27.5 mcg 120 doz burun spreyi', 8699522541379, 'Alerji ilacı', 'Johnson & Johnson', 14.50, 0.08, NULL, NULL, '2023-02-09', '10:45:00', 3, '2023-02-09', '10:45:00', 3),
+(10, 'ULTRA CRANBERRY 30 TABLET', 5021265249800, 'Astım ilacı', 'VITABIOTICS SAG', 399.00, 0.18, 320.00, 0.08, '2023-02-10', '14:15:00', 4, '2023-02-10', '14:15:00', 4),
+(11, 'IMMUNACE 30 TABLET', 5021265248667, 'Anksiyete ilacı', 'VITABIOTICS SAG', 55.80, 0.18, 40.00, 0.08, '2023-02-11', '09:30:00', 5, '2023-02-11', '09:30:00', 5),
+(12, 'Ritalin', NULL, 'Dikkat eksikliği ve hiperaktivite bozukluğu ilacı', 'Novartis', 22.40, 0.18, 15.00, 0.08, '2023-02-12', '12:00:00', 6, '2023-02-12', '12:00:00', 6),
+(13, 'Atarax', NULL, 'Sakinleştirici', 'UCB', 7.90, 0.08, 5.50, 0.08, '2023-02-13', '13:30:00', 1, '2023-02-13', '13:30:00', 1),
+(14, 'Zoloft', NULL, 'Antidepresan', 'Pfizer', 49.95, 0.18, 35.00, 0.08, '2023-02-14', '16:00:00', 2, '2023-02-14', '16:00:00', 2),
+(15, 'Dolorex', NULL, 'Ağrı kesici', 'Abdi İbrahim', 10.50, 0.18, 7.50, 0.08, '2023-02-15', '11:15:00', 3, '2023-02-15', '11:15:00', 2),
+(16, 'NOVOFEM 1mg 28 tablet', 8699546000050, 'Hormon replasman tedavisi', 'Novartis', 85.20, 0.18, 70.00, 0.08, '2023-02-16', '09:45:00', 4, '2023-02-16', '09:45:00', 4),
+(17, 'VENTOLIN INHALER 100 mcg', 8699515113855, 'Astım ilacı', 'GlaxoSmithKline', 28.90, 0.18, 20.00, 0.08, '2023-02-17', '14:00:00', 5, '2023-02-17', '14:00:00', 5),
+(18, 'NEUROVIT 20 tablet', 8699816000217, 'Sinir sistemi destek', 'Abdi İbrahim', 18.75, 0.18, 15.00, 0.08, '2023-02-18', '10:30:00', 6, '2023-02-18', '10:30:00', 6),
+(19, 'ASPIRIN 100 mg 20 tablet', 8699790941469, 'Ağrı kesici', 'Bayer', 5.40, 0.18, 3.50, 0.08, '2023-02-19', '12:15:00', 1, '2023-02-19', '12:15:00', 1),
+(20, 'CIPRALEX 10 mg 28 tablet', 8699546011445, 'Antidepresan', 'Lundbeck', 63.80, 0.18, 50.00, 0.08, '2023-02-20', '15:30:00', 2, '2023-02-20', '15:30:00', 2),
+(21, 'EFFEXOR XR 75 mg 28 tablet', 8699711602018, 'Antidepresan', 'Pfizer', 96.50, 0.18, 80.00, 0.08, '2023-02-21', '11:00:00', 3, '2023-02-21', '11:00:00', 3),
+(22, 'LOPERAMID 2 mg 20 kapsül', 8699546090709, 'İshal tedavisi', 'Abdi İbrahim', 8.75, 0.08, 6.00, 0.08, '2023-02-22', '14:45:00', 4, '2023-02-22', '14:45:00', 4),
+(23, 'SYNAREL 200 doz burun spreyi', 8699514920236, 'Üreme sistemi tedavisi', 'AbbVie', 112.80, 0.18, 95.00, 0.08, '2023-02-23', '09:15:00', 5, '2023-02-23', '09:15:00', 5),
+(24, 'PROZAC 20 mg 24 tablet', 8699739021444, 'Antidepresan', 'Lilly', 37.90, 0.18, 30.00, 0.08, '2023-02-24', '12:30:00', 6, '2023-02-24', '12:30:00', 6),
+(25, 'TRIXONA 1 g 5 flakon', 8699858020041, 'Antibiyotik', 'Biofarma', 62.20, 0.18, 50.00, 0.08, '2023-02-25', '15:45:00', 1, '2023-02-25', '15:45:00', 1),
+(26, 'SEROQUEL XR 300 mg 30 tablet', 8699515692900, 'Antipsikotik', 'AstraZeneca', 178.60, 0.18, 150.00, 0.08, '2023-02-26', '09:30:00', 2, '2023-02-26', '09:30:00', 2),
+(27, 'LIPITOR 20 mg 28 tablet', 8699632181216, 'Kolesterol düşürücü', 'Pfizer', 58.75, 0.18, 45.00, 0.08, '2023-02-27', '12:45:00', 3, '2023-02-27', '12:45:00', 3),
+(28, 'FLONASE 50 mcg/dose 120 doz burun spreyi', 5010123701565, 'Alerji ilacı', 'GSK', 39.90, 0.18, 30.00, 0.08, '2023-02-28', '14:00:00', 4, '2023-02-28', '14:00:00', 4),
+(29, 'CRESTOR 10 mg 28 tablet', 8699569003316, 'Kolesterol düşürücü', 'AstraZeneca', 94.25, 0.18, 80.00, 0.08, '2023-03-01', '15:15:00', 5, '2023-03-01', '15:15:00', 5),
+(30, 'NOVOMIX 30 FLEKSIJEN 100 IU/ml 5 kartuş', 8699515692375, 'İnsülin', 'Novo Nordisk', 120.80, 0.18, 100.00, 0.08, '2023-03-02', '09:45:00', 6, '2023-03-02', '09:45:00', 6),
+(31, 'CIALIS 20 mg 4 tablet', 8699597950015, 'Erektil disfonksiyon tedavisi', 'Lilly', 98.20, 0.18, 80.00, 0.08, '2023-03-03', '12:00:00', 1, '2023-03-03', '12:00:00', 1),
+(32, 'LEVITRA 20 mg 8 tablet', 8699546010349, 'Erektil disfonksiyon tedavisi', 'Bayer', 84.50, 0.18, 70.00, 0.08, '2023-03-04', '13:15:00', 2, '2023-03-04', '13:15:00', 2),
+(33, 'ZYRTEC 10 mg 20 film tablet', 8699546000012, 'Alerji ilacı', 'Johnson & Johnson', 21.30, 0.18, 18.00, 0.08, '2023-03-05', '14:30:00', 3, '2023-03-05', '14:30:00', 3),
+(34, 'XANAX 1 mg 50 tablet', 8699559340018, 'Anksiyolitik', 'Pfizer', 26.90, 0.18, 22.00, 0.08, '2023-03-06', '15:45:00', 4, '2023-03-06', '15:45:00', 4),
+(35, 'SYNAGIS 100 mg 6 enjeksiyon', 8699597011011, 'Solunum yolu enfeksiyonu tedavisi', 'AstraZeneca', 750.00, 0.18, 600.00, 0.08, '2023-03-07', '09:00:00', 5, '2023-03-07', '09:00:00', 5),
+(36, 'ZYVOX 600 mg 10 film tablet', 8699569001077, 'Antibiyotik', 'Pfizer', 185.00, 0.18, 150.00, 0.08, '2023-03-08', '10:15:00', 6, '2023-03-08', '10:15:00', 6),
+(37, 'VITAMIN D3 1000 IU 90 tablet', 8699503630202, 'Vitamin takviyesi', 'Solgar', 15.50, 0.08, 12.00, 0.08, '2023-03-09', '11:30:00', 1, '2023-03-09', '11:30:00', 1),
+(38, 'CELEBREX 200 mg 20 kapsül', 8699546090181, 'Ağrı kesici', 'Pfizer', 69.80, 0.18, 55.00, 0.08, '2023-03-10', '12:45:00', 2, '2023-03-10', '12:45:00', 2),
+(39, 'NEXIUM 40 mg 28 tablet', 8699578090104, 'Mide koruyucu', 'AstraZeneca', 98.60, 0.18, 80.00, 0.08, '2023-03-11', '14:00:00', 3, '2023-03-11', '14:00:00', 3),
+(40, 'ROACCUTANE 20 mg 30 kapsül', 8699812000315, 'Akne tedavisi', 'Roche', 120.75, 0.18, 100.00, 0.08, '2023-03-12', '15:15:00', 4, '2023-03-12', '15:15:00', 4),
+(42, 'ENBREL 50 mg 4 enjeksiyon', 8699597010014, 'Romatoid artrit tedavisi', 'Pfizer', 299.80, 0.18, 250.00, 0.08, '2023-03-14', '10:45:00', 6, '2023-03-14', '10:45:00', 6),
+(43, 'ASPIRIN 300 mg 20 tablet', 8699878510140, 'Kan sulandırıcı', 'Bayer', 15.25, 0.08, 12.00, 0.08, '2023-03-15', '12:00:00', 1, '2023-03-15', '12:00:00', 1),
+(44, 'DIFLUCAN 150 mg 1 kapsül', 8699597675042, 'Mantar enfeksiyonu tedavisi', 'Pfizer', 18.90, 0.08, 15.00, 0.08, '2023-03-16', '13:15:00', 2, '2023-03-16', '13:15:00', 2),
+(45, 'CALPOL 500 mg 20 tablet', 5000158061323, 'Ağrı kesici', 'GSK', 10.50, 0.08, 8.00, 0.08, '2023-03-17', '14:30:00', 3, '2023-03-17', '14:30:00', 3),
+(46, 'SYMBICORT TURBUHALER 200/6 mcg 120 doz', 8699535050143, 'Astım tedavisi', 'AstraZeneca', 120.40, 0.18, 100.00, 0.08, '2023-03-18', '15:45:00', 4, '2023-03-18', '15:45:00', 4),
+(47, 'DIOVAN 160 mg 28 tablet', 8699578090111, 'Hipertansiyon tedavisi', 'Novartis', 75.90, 0.18, 60.00, 0.08, '2023-03-19', '09:00:00', 5, '2023-03-19', '09:00:00', 5),
+(48, 'EFFERALGAN 500 mg 20 tablet', 8699812080027, 'Ağrı kesici', 'Sanofi', 14.80, 0.08, 12.00, 0.08, '2023-03-20', '10:15:00', 6, '2023-03-20', '10:15:00', 6),
+(49, 'VALTREX 500 mg 10 tablet', 8699546081093, 'Antiviral', 'GlaxoSmithKline', 48.60, 0.18, 40.00, 0.08, '2023-03-21', '11:30:00', 1, '2023-03-21', '11:30:00', 1),
+(50, 'ADALAT 10 mg 30 kapsül', 8699546003358, 'Kan basıncı düzenleyici', 'Bayer', 22.75, 0.18, 18.00, 0.08, '2023-03-22', '12:45:00', 2, '2023-03-22', '12:45:00', 2),
+(51, 'ZYRTEC 10 mg 30 film tablet', 8699546000029, 'Alerji ilacı', 'Johnson & Johnson', 28.50, 0.18, 24.00, 0.08, '2023-04-01', '08:45:00', 3, '2023-04-01', '08:45:00', 3),
+(52, 'IBUPROFEN 400 mg 20 tablet', 8699857500017, 'Ağrı kesici', 'Abbott', 15.80, 0.08, 13.00, 0.08, '2023-04-02', '10:00:00', 4, '2023-04-02', '10:00:00', 4),
+(53, 'PREDNOL L 40 mg 10 tablet', 8699749010045, 'Antiinflamatuar', 'Servier', 22.90, 0.08, 18.00, 0.08, '2023-04-03', '11:15:00', 5, '2023-04-03', '11:15:00', 5),
+(54, 'VOLTAREN EMULGEL 100 gr', 8699546060012, 'Ağrı kesici jel', 'Novartis', 27.50, 0.18, 22.00, 0.08, '2023-04-04', '12:30:00', 6, '2023-04-04', '12:30:00', 6),
+(55, 'LOPERAMID 2 mg 20 kapsül', 8699546000784, 'İshal tedavisi', 'Johnson & Johnson', 14.25, 0.08, 12.00, 0.08, '2023-04-05', '13:45:00', 1, '2023-04-05', '13:45:00', 1),
+(56, 'CIPRO 500 mg 14 tablet', 8699514090908, 'Antibiyotik', 'Bayer', 48.70, 0.18, 40.00, 0.08, '2023-04-06', '15:00:00', 2, '2023-04-06', '15:00:00', 2),
+(57, 'NIMESULID 100 mg 30 granül', 8699546010462, 'Ağrı kesici', 'Abdi İbrahim', 18.40, 0.08, 15.00, 0.08, '2023-04-07', '09:15:00', 3, '2023-04-07', '09:15:00', 3),
+(58, 'KLAVUZEN 625 mg 14 tablet', 8699546030048, 'Antibiyotik', 'Abdi İbrahim', 29.80, 0.18, 25.00, 0.08, '2023-04-08', '10:30:00', 4, '2023-04-08', '10:30:00', 4),
+(59, 'DEPO-PROVERA 150 mg 1 ml 1 ampul', 8699829000028, 'Kontraseptif', 'Pfizer', 37.90, 0.18, 30.00, 0.08, '2023-04-09', '11:45:00', 5, '2023-04-09', '11:45:00', 5),
+(60, 'IMOVANE 7.5 mg 30 tablet', 8699586001023, 'Uyku düzenleyici', 'Sanofi', 28.60, 0.18, 23.00, 0.08, '2023-04-10', '13:00:00', 6, '2023-04-10', '13:00:00', 6),
+(61, 'TRAMADOL 50 mg 20 kapsül', 8699832050104, 'Ağrı kesici', 'Abdi İbrahim', 22.80, 0.18, 18.00, 0.08, '2023-04-11', '14:15:00', 1, '2023-04-11', '14:15:00', 1),
+(62, 'CALCIUM D3 FORTE 20 efervesan tablet', 8699535050112, 'Kemik sağlığı takviyesi', 'Abdi İbrahim', 13.20, 0.08, 10.00, 0.08, '2023-04-12', '15:30:00', 2, '2023-04-12', '15:30:00', 2),
+(63, 'NEXIUM CONTROL 20 mg 14 tablet', 8699514090922, 'Mide koruyucu', 'AstraZeneca', 39.50, 0.18, 32.00, 0.08, '2023-04-13', '09:45:00', 3, '2023-04-13', '09:45:00', 3),
+(64, 'ATARAX 25 mg 30 tablet', 8699546000784, 'Antihistaminik', 'UCB', 17.80, 0.18, 14.00, 0.08, '2023-04-14', '11:00:00', 4, '2023-04-14', '11:00:00', 4),
+(65, 'FLOXIFORTE 500 mg 10 tablet', 8699535070011, 'Antibiyotik', 'Sanovel', 26.90, 0.18, 22.00, 0.08, '2023-04-15', '12:15:00', 5, '2023-04-15', '12:15:00', 5),
+(66, 'FLUCONAZOL 150 mg 1 kapsül', 8699876700016, 'Mantar enfeksiyonu tedavisi', 'Bilim İlaç', 19.75, 0.08, 16.00, 0.08, '2023-04-16', '13:30:00', 6, '2023-04-16', '13:30:00', 6),
+(67, 'CEZALAR 100 mg 20 tablet', 8699535060197, 'Ağrı kesici', 'Abdi İbrahim', 14.60, 0.08, 12.00, 0.08, '2023-04-17', '14:45:00', 1, '2023-04-17', '14:45:00', 1),
+(68, 'ACETYLCYSTEINE 600 mg 20 effervescent tablet', 8699835070037, 'Öksürük şurubu', 'Abdi İbrahim', 21.90, 0.08, 18.00, 0.08, '2023-04-18', '16:00:00', 2, '2023-04-18', '16:00:00', 2),
+(69, 'LIPITOR 20 mg 30 tablet', 8699782030012, 'Kolesterol düşürücü', 'Pfizer', 45.30, 0.18, 38.00, 0.08, '2023-04-19', '09:15:00', 3, '2023-04-19', '09:15:00', 3),
+(70, 'DEXMORPHAN 15 mg 200 ml şurup', 8699546010110, 'Öksürük şurubu', 'Abdi İbrahim', 16.80, 0.08, 14.00, 0.08, '2023-04-20', '10:30:00', 4, '2023-04-20', '10:30:00', 4),
+(71, 'LEVOTIRON 100 mcg 100 tablet', 8699657000020, 'Tiroid hormonu', 'İ.E. Ulagay', 18.90, 0.08, 15.00, 0.08, '2023-05-01', '08:45:00', 3, '2023-05-01', '08:45:00', 3),
+(72, 'BACTROBAN 20 mg/g 5 gr krem', 8699626000144, 'Antibakteriyel krem', 'GlaxoSmithKline', 22.40, 0.18, 18.00, 0.08, '2023-05-02', '10:00:00', 4, '2023-05-02', '10:00:00', 4),
+(73, 'DIOVAN 80 mg 28 film tablet', 8699572000013, 'Kan basıncı düşürücü', 'Novartis', 35.20, 0.18, 28.00, 0.08, '2023-05-03', '11:15:00', 5, '2023-05-03', '11:15:00', 5),
+(74, 'CELESTAMINE 1 mg/ml 100 ml şurup', 8699776000018, 'Alerji ilacı', 'Bayer', 14.90, 0.08, 12.00, 0.08, '2023-05-04', '12:30:00', 6, '2023-05-04', '12:30:00', 6),
+(75, 'ESOFAGUS 20 mg 28 tablet', 8699546090026, 'Mide koruyucu', 'Abdi İbrahim', 29.60, 0.18, 24.00, 0.08, '2023-05-05', '13:45:00', 1, '2023-05-05', '13:45:00', 1),
+(76, 'DEPAKINE 300 mg 50 tablet', 8699586000187, 'Epilepsi ilacı', 'Sanofi', 42.30, 0.18, 35.00, 0.08, '2023-05-06', '15:00:00', 2, '2023-05-06', '15:00:00', 2),
+(77, 'NASONEX 50 mcg/dose 120 doz burun spreyi', 8699508800014, 'Alerji ilacı', 'Merck Sharp & Dohme', 55.80, 0.18, 45.00, 0.08, '2023-05-07', '09:15:00', 3, '2023-05-07', '09:15:00', 3),
+(78, 'LANSOR 30 mg 28 kapsül', 8699514010272, 'Mide asidi düzenleyici', 'Pfizer', 27.40, 0.18, 22.00, 0.08, '2023-05-08', '10:30:00', 4, '2023-05-08', '10:30:00', 4),
+(79, 'NEUROVIT 20 tablet', 8699514091035, 'Sinir sistemi vitaminleri', 'Bayer', 19.90, 0.08, 16.00, 0.08, '2023-05-09', '11:45:00', 5, '2023-05-09', '11:45:00', 5),
+(80, 'ENSTAB 500 mg 20 tablet', 8699508800243, 'Antibiyotik', 'Merck Sharp & Dohme', 33.70, 0.18, 28.00, 0.08, '2023-05-10', '13:00:00', 6, '2023-05-10', '13:00:00', 6),
+(81, 'TENORETIC 50/5 mg 30 tablet', 8699565000031, 'Kan basıncı düşürücü', 'AstraZeneca', 31.90, 0.18, 26.00, 0.08, '2023-05-11', '14:15:00', 1, '2023-05-11', '14:15:00', 1),
+(82, 'LOXONIN 60 mg 20 tablet', 8699832080025, 'Ağrı kesici', 'Abdi İbrahim', 23.50, 0.18, 19.00, 0.08, '2023-05-12', '15:30:00', 2, '2023-05-12', '15:30:00', 2),
+(83, 'ALVESCO 160 mikrogram 120 doz inhalasyon', 8699546000838, 'Astım ilacı', 'Takeda', 48.80, 0.18, 40.00, 0.08, '2023-05-13', '09:45:00', 3, '2023-05-13', '09:45:00', 3),
+(84, 'NOVONORM 1 mg 30 tablet', 8699546010158, 'Şeker düzenleyici', 'Novartis', 17.60, 0.08, 14.00, 0.08, '2023-05-14', '11:00:00', 4, '2023-05-14', '11:00:00', 4),
+(85, 'SEREVENT DISKUS 50 mikrogram 60 doz', 8699536040119, 'Astım ilacı', 'GlaxoSmithKline', 34.90, 0.18, 28.00, 0.08, '2023-05-15', '12:15:00', 5, '2023-05-15', '12:15:00', 5),
+(86, 'ZENATIN 20 mg 28 kapsül', 8699701100056, 'Antibiyotik', 'Abdi İbrahim', 41.20, 0.18, 33.00, 0.08, '2023-05-16', '13:30:00', 6, '2023-05-16', '13:30:00', 6),
+(87, 'NASACORT 55 mikrogram burun spreyi', 8699514090199, 'Alerji ilacı', 'Sanofi', 22.90, 0.08, 18.00, 0.08, '2023-05-17', '14:45:00', 1, '2023-05-17', '14:45:00', 1),
+(88, 'BETADINE 10% deri spreyi 50 ml', 8699717000376, 'Antiseptik', 'Eczacıbaşı', 15.80, 0.08, 12.00, 0.08, '2023-05-18', '16:00:00', 2, '2023-05-18', '16:00:00', 2),
+(89, 'NITROGLISERIN 0.4 mg 50 tablet', 8699599000024, 'Kalp ilacı', 'Mustafa Nevzat', 12.40, 0.08, 10.00, 0.08, '2023-05-19', '09:15:00', 3, '2023-05-19', '09:15:00', 3),
+(90, 'CICLOCHEM 400 mg 20 tablet', 8699877600043, 'Romatizma ilacı', 'Abdi İbrahim', 28.60, 0.18, 24.00, 0.08, '2023-05-20', '10:30:00', 4, '2023-05-20', '10:30:00', 4);
+
+
+-- DB_Recete tablosuna veri ekleme
+INSERT INTO DB_Recete (R_Id, ReceteTipi, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(0, 'Reçetesiz', '2023-05-01', '13:15:00', 1, '2023-05-01', '13:15:00', 1),
+(1, 'Beyaz Reçete', '2023-12-19', '13:18:00', 1, '2023-12-19', '13:18:00', 1),
+(2, 'Yeşil Reçete', '2023-12-19', '14:45:00', 1, '2023-12-19', '14:45:00', 1),
+(3, 'Kırmızı Reçete', '2023-12-19', '14:45:00', 1, '2023-12-19', '14:45:00', 1),
+(4, 'Beyaz + Kırmızı Reçete', '2023-12-19', '14:45:00', 1, '2023-12-19', '14:45:00', 1);
+
+
+-- DB_Kategori tablosuna veri ekleme
+INSERT INTO DB_Kategori (R_Id, KategoriAdi, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 'Ağrı Kesiciler ve Ateş Düşürücüler', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(2, 'Antibiyotikler', '2023-06-02', '11:00:00', 2, '2023-06-02', '11:00:00', 2),
+(3, 'Antienflamatuar İlaçlar', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(4, 'Vitamin ve Mineraller', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(5, 'Göz ve Kulak İlaçları', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(6, 'Solunum Sistemi İlaçları', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(7, 'Kalp ve Dolaşım Sistemi İlaçları', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(8, 'Dermatolojik Ürünler', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(9, 'Gastrointestinal Sistem İlaçları', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(10, 'Sindirim Sistemi İlaçları', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(11, 'Romatolojik İlaçlar', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(12, 'Nörolojik İlaçlarr', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(13, 'Adale ve Kemik İlaçları', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(14, 'Psikiyatrik İlaçlar', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(15, 'Doğum Kontrol ve Hormonal İlaçlarr', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(16, 'Anti-alerjik İlaçlar', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(17, 'Kozmatik Ürünleri', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(18, 'Supplementler', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1),
+(19, 'Gıda Takviyeleri', '2023-06-01', '09:30:00', 1, '2023-06-01', '09:30:00', 1);
+
+-- DB_OdemeYontemi tablosuna veri ekleme
+INSERT INTO DB_OdemeYontemi (R_Id, OdemeYontemiAdi, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 'Nakit', '2023-03-01', '14:00:00', 1, '2023-03-01', '14:00:00', 1),
+(2, 'Kredi Kartı', '2023-03-02', '15:30:00', 1, '2023-03-02', '15:30:00', 1),
+(3, 'Havale', '2023-03-03', '10:00:00', 1, '2023-03-03', '10:00:00', 1),
+(4, 'EFT', '2023-03-04', '12:45:00', 1, '2023-03-04', '12:45:00', 1),
+(5, 'Promosyon Kartı', '2023-03-04', '12:45:00', 1, '2023-03-04', '12:45:00', 1);
+
+
+
+-- DB_Fatura tablosuna veri ekleme
+INSERT INTO DB_Fatura (R_Id, FaturaTipi, CariId, GenelToplam, OdemeId, PersonelId, Tarih, Saat, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 1, 1, 206.10, 1, 1, '2023-04-01', '09:45:00', '2023-04-01', '09:45:00', 1, '2023-04-01', '09:45:00', 1),
+(2, 1, 2, 104.22, 1, 2, '2023-04-02', '11:15:00', '2023-04-02', '11:15:00', 2, '2023-04-02', '11:15:00', 2),
+(3, 1, 2, 41.22, 1, 1, '2023-04-02', '11:15:00', '2023-04-02', '11:15:00', 1, '2023-04-02', '11:15:00', 1),
+(4, 1, 3, 37.80, 2, 3, '2023-05-01', '10:00:00', '2023-05-01', '10:00:00', 1, '2023-05-01', '10:00:00', 1),
+(5, 1, 4, 22.40, 1, 4, '2023-05-02', '11:30:00', '2023-05-02', '11:30:00', 2, '2023-05-02', '11:30:00', 2),
+(6, 1, 5, 77.25, 2, 3, '2023-05-03', '12:45:00', '2023-05-03', '12:45:00', 1, '2023-05-03', '12:45:00', 1),
+(7, 1, 5, 207.98, 1, 5, '2023-05-04', '14:15:00', '2023-05-04', '14:15:00', 3, '2023-05-04', '14:15:00', 3),
+(8, 1, 3, 148.00, 1, 6, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(9, 1, 6, 94.25, 1, 6, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(10, 1, 15, 21.90, 1, 5, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(11, 1, 10, 127.60, 1, 3, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(12, 1, 11, 112.80, 2, 2, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(13, 1, 9, 53.80, 1, 4, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(14, 1, 33, 53.80, 1, 3, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(15, 1, 19, 151.80, 2, 3, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 4, '2023-05-05', '15:30:00', 4),
+(16, 1, 28, 50.30, 1, 1, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 1, '2023-05-05', '15:30:00', 1),
+(17, 1, 42, 96.80, 1, 1, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 1, '2023-05-05', '15:30:00', 1),
+(18, 1, 33, 339.00, 2, 1, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 1, '2023-05-05', '15:30:00', 1),
+(19, 1, 10, 37.24, 1, 1, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 1, '2023-05-05', '15:30:00', 1),
+(20, 1, 19, 117.60, 2, 1, '2023-05-05', '15:30:00', '2023-05-05', '15:30:00', 1, '2023-05-05', '15:30:00', 1),
+
+
+-- DB_FaturaDetay tablosuna veri ekleme
+INSERT INTO DB_FaturaDetay (R_Id, FaturaId, IlacId, Miktar, BirimFiyat, SatirToplam, BirimKDV, ReceteId, KategoriId, EklemeTarihi, EklemeSaati, Ekleyen, GuncellemeTarihi, GuncellemeSaati, Guncelleyen)
+VALUES 
+(1, 1, 1, 5, 41.22, 206.10, 0.18, 1, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(2, 2, 2, 3, 34.74, 104.22, 0.15, 2, 2, '2023-04-02', '12:30:00', 2, '2023-04-02', '12:30:00', 2),
+(3, 3, 1, 1, 41.22, 41.22, 0.18, 0, 1, '2023-04-02', '12:30:00', 1, '2023-04-02', '12:30:00', 1),
+(4, 4, 71, 2, 18.90, 37.80, 0.08, 0, 1, '2023-05-01', '10:30:00', 1, '2023-05-01', '10:30:00', 1),
+(5, 5, 72, 1, 22.40, 22.40, 0.18, 1, 2, '2023-05-02', '12:00:00', 2, '2023-05-02', '12:00:00', 2),
+(6, 6, 73, 3, 25.75, 77.25, 0.18, 1, 1, '2023-05-03', '13:15:00', 1, '2023-05-03', '13:15:00', 1),
+(7, 7, 74, 2, 103.99, 207.98, 0.18, 2, 2, '2023-05-04', '14:45:00', 3, '2023-05-04', '14:45:00', 3),
+(8, 8, 75, 5, 29.60, 148.00, 0.18, 1, 2, '2023-05-05', '16:00:00', 4, '2023-05-05', '16:00:00', 4),
+(9, 9, 29, 1, 94.25, 94.25, 0.18, 0, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(10, 10, 68, 1, 21.90, 21.90, 0.08, 0, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(11, 11, 20, 2, 63.80, 127.60, 0.18, 0, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(12, 12, 23, 1, 112.80, 127.60, 0.18, 0, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(13, 13, 34, 2, 26.90, 53.80, 0.18, 0, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(14, 14, 23, 1, 112.80, 127.60, 0.18, 0, 1, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:15:00', 1),
+(15, 15, 47, 2, 75.90, 151.80, 0.18, 3, 7, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:20:00', 1),
+(16, 16, 63, 1, 39.50, 39.50, 0.18, 1, 10, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(17, 16, 19, 2, 5.40, 10.80, 0.18, 1, 5, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(18, 17, 39, 1, 96.80, 96.80, 0.18, 1, 6, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(19, 18, 48, 1, 14.80, 14.80, 0.18, 1, 4, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(20, 18, 39, 1, 98.60, 98.60, 0.08, 1, 5, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(21, 18, 23, 2, 112.8, 225.60, 0.18, 1, 6, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(22, 19, 2, 1, 37.24, 37.24, 0.18, 1, 7, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(23, 20, 11, 2, 58.80, 117.60, 0.18, 1, 7, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
+(24, 21, 3, 2, 58.80, 117.60, 0.18, 1, 8, '2023-04-01', '10:00:00', 1, '2023-04-01', '10:00:00', 1),
